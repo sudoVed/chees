@@ -16,13 +16,15 @@
   // here only (not in index.html). The net file path is in models/manifest.json
   // (falls back to models/net.nnue) — see engine-bridge.js fetchNet().
   // ===========================================================================
+  // Labels are display-only flavour; the real spec (eval + depth) lives in `desc`,
+  // so the dropdown reads as a polished difficulty ladder, not a meme.
   const MODELS = {
-    AI1: { label: 'Pragg-nunnu',  eval: 'nnue', depth: 3,  timeMs: 1500, desc: 'Neural-net eval · minimum search' },
-    AI2: { label: 'Gary Gas-ka-price',  eval: 'nnue', depth: 5,  timeMs: 1500, desc: 'Neural-net eval · shallow search' },
-    AI3: { label: 'Bobby Seizure', eval: 'nnue', depth: 10, timeMs: 4000, desc: 'Neural-net eval · deeper search' },
-    AI4: { label: 'Gukesh Gutka-wala',   eval: 'hce',  depth: 3,  timeMs: 1500, desc: 'Hand-crafted eval · minimum search' },
-    AI5: { label: 'Hikaru Hakla',   eval: 'hce',  depth: 5,  timeMs: 1500, desc: 'Hand-crafted eval · shallow search' },
-    AI6: { label: 'Magnus Murgi-chor',  eval: 'hce',  depth: 10, timeMs: 4000, desc: 'Hand-crafted eval · deeper search' },
+    AI1: { label: 'Neurally Oblivious',    eval: 'nnue', depth: 3,  timeMs: 1500, desc: 'Neural-net eval · depth 3' },
+    AI2: { label: 'Neurally Obvious',      eval: 'nnue', depth: 5,  timeMs: 1500, desc: 'Neural-net eval · depth 5' },
+    AI3: { label: 'Neurally Ostentatious', eval: 'nnue', depth: 10, timeMs: 4000, desc: 'Neural-net eval · depth 10' },
+    AI4: { label: 'Heuristically Hopeless', eval: 'hce', depth: 3,  timeMs: 1500, desc: 'Hand-crafted eval · depth 3' },
+    AI5: { label: 'Heuristically Handy',    eval: 'hce', depth: 5,  timeMs: 1500, desc: 'Hand-crafted eval · depth 5' },
+    AI6: { label: 'Heuristically Heroic',   eval: 'hce', depth: 10, timeMs: 4000, desc: 'Hand-crafted eval · depth 10' },
   };
 
   const Controls = {

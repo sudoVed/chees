@@ -172,31 +172,6 @@ EXPORT int get_status() { return (int)Rules::status(g_pos); }
 
 EXPORT int in_check() { return g_pos.in_check(g_pos.side) ? 1 : 0; }
 
-// ----------------- evaluation (Phase 8) -----------------
-// Static hand-crafted eval. Two flavors so the UI can show whichever it wants:
-//   eval_stm()   -> centipawns, side-to-move perspective (+ = stm better)
-//   eval_white() -> centipawns, White-minus-Black (+ = White better)
-EXPORT int eval_stm()   { return Eval::evaluate(g_pos); }
-EXPORT int eval_white() { return Eval::evaluate_white(g_pos); }
-
-// Per-term breakdown for debugging / display. JS reads the shared buffers:
-//   get_eval_terms_buf()  -> int[TERM_NB] White-minus-Black per term (pre-scale)
-// eval_breakdown() fills them and returns the final scaled White-minus-Black
-// eval. Phase (0..24) and drawish scale (out of 64) are exposed separately.
-static int g_evalTerms[Eval::TERM_NB];
-static int g_evalPhase = 0;
-static int g_evalScale = 64;
-
-EXPORT int* get_eval_terms_buf() { return g_evalTerms; }
-EXPORT int  eval_term_count()    { return Eval::TERM_NB; }
-EXPORT int  eval_phase()         { return g_evalPhase; }
-EXPORT int  eval_scale()         { return g_evalScale; }
-
-EXPORT int eval_breakdown() {
-    int total = Eval::evaluate_breakdown(g_pos, g_evalTerms, &g_evalPhase, &g_evalScale);
-    return total;
-}
-
 // ----------------- perft (correctness harness) -----------------
 static long perft(Position& pos, int depth) {
     if (depth == 0) return 1;

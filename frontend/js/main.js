@@ -48,7 +48,6 @@
     }
 
     BoardUI.init(document.getElementById('board'), (sq) => Interaction.handleClick(sq));
-    EvalBar.init();
     if (window.AIWorker) AIWorker.init();
     Interaction.init(onStateChange);
     Controls.init();

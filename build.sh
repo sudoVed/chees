@@ -27,10 +27,8 @@ EXPORTS=(
   last_move_from last_move_to get_targets_buf get_flags_buf
   get_legal_moves api_is_capture api_is_promotion api_make_move undo get_status
   in_check perft_current
-  eval_stm eval_white eval_breakdown get_eval_terms_buf eval_term_count
-  eval_phase eval_scale
   search_best_move search_score search_nodes search_depth
-  get_nnue_buf nnue_blob_capacity load_nnue nnue_active eval_nnue_white
+  get_nnue_buf nnue_blob_capacity load_nnue nnue_active
   set_search_eval
 )
 EXPORT_FLAGS=""

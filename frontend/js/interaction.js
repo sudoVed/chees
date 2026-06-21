@@ -128,9 +128,6 @@
       BoardUI.setOrientation(orientation);
       BoardUI.render(Engine.board());
       this._draw();
-      // HCE models show the hand-crafted eval; NNUE models show the net's eval.
-      const useNnue = (this.mode === 'pvai') ? this.aiUseNnue : true;
-      if (global.EvalBar) EvalBar.update(orientation, useNnue);
       this._reportStatus();
     },
 

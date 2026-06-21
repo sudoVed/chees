@@ -20,7 +20,8 @@
   --lastmove: rgba(201,162,39,0.30);
   --check:    rgba(190,52,42,0.88);
 
-  --board: min(calc(92vw - 44px), calc(100vh - 96px), 760px);
+  /* board fills the available space (no eval bar): width- or height-bounded */
+  --board: min(calc(100vw - 16px), calc(100vh - 96px), 760px);
   --sq: calc(var(--board) / 8);
   --serif: "Hoefler Text", "Iowan Old Style", Georgia, "Times New Roman", serif;
 }
@@ -28,7 +29,7 @@
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
 html, body, .screen, .start-card, .menu-btn, .bar-btn, .ai-field, .ai-select,
-.side-btn, .turn, .ai-log, .evalbar, .board, .coord, .result-banner,
+.side-btn, .turn, .ai-log, .board, .coord, .result-banner,
 .modal, .logo, .ai-desc, .nnue-status, #status-text {
   -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;
 }
@@ -130,32 +131,7 @@ body {
   flex: 1 1 auto; display: flex; align-items: center; justify-content: center;
   padding: 6px 8px 14px;
 }
-.board-wrap { display: flex; align-items: stretch; gap: 12px; }
-
-/* ---------- eval bar ---------- */
-.evalbar {
-  position: relative; flex: 0 0 auto;
-  width: 24px; height: var(--board);
-  border-radius: 2px; overflow: hidden;
-  background: #161617;                         /* black zone */
-  box-shadow: inset 0 0 0 1px var(--line);
-}
-.evalbar-fill {
-  position: absolute; left: 0; right: 0; bottom: 0;
-  height: 50%; background: #f6f2e9;            /* white zone */
-  transition: height .35s ease;
-}
-.evalbar.flip .evalbar-fill { bottom: auto; top: 0; }
-.evalbar-score {
-  position: absolute; left: 0; right: 0; bottom: 4px;
-  text-align: center; font-size: 11px; font-weight: 700;
-  z-index: 2; pointer-events: none; letter-spacing: 0.3px;
-}
-
-@media (max-width: 520px) {
-  .evalbar { width: 16px; }
-  .board-wrap { gap: 8px; }
-}
+.board-wrap { display: flex; }
 
 /* ---------- board ---------- */
 .board {
@@ -300,8 +276,8 @@ body {
 @media (max-width: 520px) {
   .logo { font-size: 34px; letter-spacing: 6px; }
   .ai-log { padding: 3px 14px 6px; font-size: 11px; }
-  /* a hair more board area on narrow phones */
-  :root { --board: min(calc(94vw - 34px), calc(100vh - 92px), 760px); }
+  /* board spans the full phone width (minus the board-area padding) */
+  :root { --board: min(calc(100vw - 16px), calc(100vh - 88px), 760px); }
 }
 
 /* Landscape phones: short height — shrink the chrome so the board still fits. */
@@ -309,7 +285,7 @@ body {
   .gamebar { padding: 6px 14px; }
   .ai-log { padding: 1px 14px 3px; min-height: 0; }
   .board-area { padding: 2px 6px 6px; }
-  :root { --board: min(calc(92vw - 44px), calc(100vh - 64px), 760px); }
+  :root { --board: min(calc(100vw - 12px), calc(100vh - 58px), 760px); }
 }
 
 /* Respect users who reduce motion. */

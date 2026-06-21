@@ -151,8 +151,6 @@ just edit the object — nothing else. (See [§13](#13-tweaking-things).)
 `via NNUE D10 · 412 ms` — the eval that *actually* ran, the depth it reached, and
 how long it took. While in the opening book it instead shows `Book move`.
 
-**The eval bar.** The vertical bar beside the board shows who's better, as a
-win-probability split (it uses the same evaluator your chosen model uses).
 
 ---
 
@@ -462,7 +460,7 @@ frontend/      the static site (this is what you deploy)
     board-ui.js        draws the board + pieces
     interaction.js     clicks, legal-move limiter, move flow, book-then-search
     controls.js        screens + the MODELS config (edit opponents here)
-    evalbar.js / main.js
+    main.js            boot + wiring
   models/      net.nnue + manifest.json
   book/        Book.bin (served to the browser)
 

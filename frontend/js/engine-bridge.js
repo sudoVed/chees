@@ -97,12 +97,6 @@
     undo() { return this._e.undo() === 1; },
     status() { return STATUS[this._e.get_status()]; },
 
-    // ---- static evaluation (Phase 8) ----
-    // centipawns, White-minus-Black (+ = White better). No search yet, so this
-    // is the static eval of the current position.
-    evalWhite() { return this._e.eval_white() | 0; },
-    evalStm() { return this._e.eval_stm() | 0; },
-
     // ---- search (Phase 9): best move for the side to move ----
     searchBestMove(depth, maxNodes) {
       const m = this._e.search_best_move(depth | 0, (maxNodes | 0));
@@ -126,9 +120,6 @@
     // Force the search to use NNUE (true) or HCE (false). Used by the file://
     // synchronous fallback; the Web Worker drives its own engine instance.
     setSearchEval(useNnue) { if (this._e.set_search_eval) this._e.set_search_eval(useNnue ? 1 : 0); },
-
-    // NNUE eval of the current position, White-relative centipawns (eval bar).
-    evalNnueWhite() { return this._e.eval_nnue_white() | 0; },
 
     // Serialize the current position to a FEN (so a Web Worker can be handed it).
     getFEN() {
