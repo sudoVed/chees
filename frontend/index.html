@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Chess</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div id="loading" class="loading">Loading…</div>
+
+  <!-- Start screen: blank, centered menu -->
+  <section id="start-screen" class="screen center hidden">
+        <div class="start-card">
+      <h1 class="logo">Chess</h1>
+      <div id="mode-buttons">
+        <button id="btn-pvp" class="menu-btn">Human vs Human</button>
+        <button id="btn-pvai" class="menu-btn">Play with AI</button>
+      </div>
+      <div id="ai-setup" class="ai-setup hidden">
+        <label class="ai-field">Model
+          <select id="ai-model" class="ai-select"><!-- options generated from MODELS in controls.js --></select>
+        </label>
+        <div id="ai-model-desc" class="ai-desc"></div>
+        <div class="ai-field">Play as
+          <div class="side-toggle">
+            <button class="side-btn selected" data-side="0">White</button>
+            <button class="side-btn" data-side="1">Black</button>
+          </div>
+        </div>
+        <div id="ai-status" class="nnue-status"></div>
+        <button id="btn-ai-start" class="menu-btn">Start game</button>
+        <button id="btn-ai-back" class="menu-btn small">Back</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Game screen -->
+  <section id="game-screen" class="screen hidden">
+    <header class="gamebar">
+      <div class="turn">
+        <span id="turn-dot" class="turn-dot white"></span>
+        <span id="status-text">White to move</span>
+      </div>
+      <div class="bar-actions">
+        <button id="btn-undo" class="bar-btn" title="Undo">Undo</button>
+        <button id="btn-exit" class="bar-btn" title="Exit">Exit</button>
+      </div>
+    </header>
+    <div id="ai-log" class="ai-log"></div>
+
+    <main class="board-area">
+      <div class="board-wrap">
+        <!-- Stockfish-style eval bar: white zone vs black zone; flips with the board -->
+        <div id="evalbar" class="evalbar" title="Static evaluation">
+          <div class="evalbar-fill"></div>
+          <div class="evalbar-score">0.0</div>
+        </div>
+        <div id="board" class="board"></div>
+      </div>
+    </main>
+
+    <div id="result-banner" class="result-banner hidden">
+      <span id="result-text"></span>
+      <button id="btn-result-new" class="menu-btn small">New game</button>
+    </div>
+  </section>
+
+  <script src="js/engine-wasm.js"></script>
+  <script src="js/engine-bridge.js"></script>
+  <script src="js/polyglot-keys.js"></script>
+  <script src="js/book.js"></script>
+  <script src="js/board-ui.js"></script>
+  <script src="js/evalbar.js"></script>
+  <script src="js/aiworker.js"></script>
+  <script src="js/interaction.js"></script>
+  <script src="js/controls.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
