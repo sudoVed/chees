@@ -22,9 +22,9 @@
     AI1: { label: 'Neurally Oblivious',    eval: 'nnue', depth: 3,  timeMs: 1500, desc: 'Neural-net eval · depth 3' },
     AI2: { label: 'Neurally Obvious',      eval: 'nnue', depth: 5,  timeMs: 1500, desc: 'Neural-net eval · depth 5' },
     AI3: { label: 'Neurally Ostentatious', eval: 'nnue', depth: 10, timeMs: 4000, desc: 'Neural-net eval · depth 10' },
-    AI4: { label: 'Heuristically Hopeless', eval: 'hce', depth: 3,  timeMs: 1500, desc: 'Hand-crafted eval · depth 3' },
-    AI5: { label: 'Heuristically Handy',    eval: 'hce', depth: 5,  timeMs: 1500, desc: 'Hand-crafted eval · depth 5' },
-    AI6: { label: 'Heuristically Heroic',   eval: 'hce', depth: 10, timeMs: 4000, desc: 'Hand-crafted eval · depth 10' },
+    AI4: { label: 'Classically Hopeless', eval: 'hce', depth: 3,  timeMs: 1500, desc: 'Hand-crafted eval · depth 3' },
+    AI5: { label: 'Classically Handy',    eval: 'hce', depth: 5,  timeMs: 1500, desc: 'Hand-crafted eval · depth 5' },
+    AI6: { label: 'Classically Heroic',   eval: 'hce', depth: 10, timeMs: 4000, desc: 'Hand-crafted eval · depth 10' },
   };
 
   const Controls = {
