@@ -189,6 +189,16 @@ appear on both the home screen and in-game, and the preference is remembered.
 Effects map to the move type (move / capture / castle / promotion / check), plus a
 game-end chime and button hovers. Undo plays the move sound too.
 
+**All audio runs through the Web Audio API** (decoded buffers played through an
+`AudioContext`), *not* `<audio>` elements. This is deliberate: Web Audio playback
+isn't treated as an OS "media player", so there's **no phone status-bar media
+notification**, and the music is cleanly **suspended when the tab/app is
+backgrounded** and resumed when it returns. Files are prefetched on page load and
+decoded on the first user gesture (browsers block audio until then). The trade-off
+is memory: the ~3-minute music track decodes to roughly **75 MB of raw PCM** held
+in RAM for the session (a 6 MB MP3 inflates ~12× when uncompressed) — an accepted
+cost for the cleaner behaviour. The effect clips are tiny by comparison.
+
 ### Other touches
 
 The AI waits at least half a second before playing (instant moves look jarring),
@@ -505,7 +515,7 @@ frontend/      the static site (this is what you deploy)
     book.js            Polyglot opening-book probe
     polyglot-keys.js   the 781 standard Polyglot constants
     board-ui.js        draws the board + pieces (+ slide animation, piece flip)
-    sound.js           sound effects + background music (+ toggles)
+    sound.js           Web Audio: sound effects + background music (+ toggles)
     interaction.js     clicks, limiter, move flow, book-then-search, capture trays
     controls.js        screens, the MODELS config, audio/rotation toggles
     main.js            boot + the top-bar move readout
@@ -534,7 +544,8 @@ build.sh       one-command WASM build
   piece colours are two lines in `frontend/js/board-ui.js`.
 - **Sounds / music:** drop-in replace the `.mp3` files in `frontend/assets/` (same
   names). The filename→event mapping is the `FILES` table in
-  `frontend/js/sound.js`; background-music volume is set there too.
+  `frontend/js/sound.js` (the `FILES` table); music volume is the `musicGain`
+  value in the same file. All playback is Web Audio (no `<audio>` elements).
 - **Draw-avoidance strength:** the `CONTEMPT` constant in
   `engine/search/search.cpp` (rebuild the WASM after changing it).
 - **Swap in a stronger net:** export a new `frontend/models/net.nnue` (see
