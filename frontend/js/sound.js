@@ -23,14 +23,12 @@
   }
   function setPref(key, on) { try { localStorage.setItem(key, on ? '1' : '0'); } catch (e) {} }
 
-  const sfx = {};                 // lazily-created <audio> per effect
-  function el(kind) {
-    if (!sfx[kind]) { const a = new Audio(BASE + FILES[kind]); a.preload = 'auto'; sfx[kind] = a; }
-    return sfx[kind];
-  }
+  // Eagerly create + preload every effect up front so the first play is instant.
+  const sfx = {};
+  for (const k in FILES) { const a = new Audio(BASE + FILES[k]); a.preload = 'auto'; a.load(); sfx[k] = a; }
 
   const bgm = new Audio(BASE + 'bgm.mp3');
-  bgm.loop = true; bgm.volume = 0.30; bgm.preload = 'auto';
+  bgm.loop = true; bgm.volume = 0.30; bgm.preload = 'auto'; bgm.load();
 
   let unlocked = false;
 
@@ -38,17 +36,17 @@
     effects: getPref('snd.fx', true),
     music:   getPref('snd.music', true),
 
-    // call once from a user gesture; warms the audio and starts music if enabled
+    // Call from a user gesture. Safe to call repeatedly — it (re)starts the music
+    // if it's wanted but not yet playing, so a gesture that finally satisfies the
+    // browser's autoplay policy will get it going.
     unlock() {
-      if (unlocked) return;
       unlocked = true;
-      for (const k in FILES) el(k);
-      if (this.music) this._playMusic();
+      if (this.music && bgm.paused) this._playMusic();
     },
 
     play(kind) {
       if (!this.effects || !unlocked) return;
-      const a = el(FILES[kind] ? kind : 'move');
+      const a = sfx[FILES[kind] ? kind : 'move'];
       try { a.currentTime = 0; const p = a.play(); if (p && p.catch) p.catch(() => {}); } catch (e) {}
     },
     hover() { this.play('hover'); },

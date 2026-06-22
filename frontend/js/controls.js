@@ -89,9 +89,10 @@
       // Unlock audio on the FIRST user interaction anywhere — synchronously, so it
       // still counts as a user gesture (calling unlock() after an `await`, e.g. the
       // net fetch on "Start game", is too late and the browser blocks playback).
+      // Not {once} — keep trying on each gesture until the browser lets music play.
       const unlockAudio = () => { if (global.Sound) Sound.unlock(); };
-      window.addEventListener('pointerdown', unlockAudio, { once: true });
-      window.addEventListener('keydown', unlockAudio, { once: true });
+      window.addEventListener('pointerdown', unlockAudio);
+      window.addEventListener('keydown', unlockAudio);
 
       // ---- audio toggles (music + sfx) — present on BOTH the home and game screens ----
       const musicBtns = document.querySelectorAll('.js-music');
