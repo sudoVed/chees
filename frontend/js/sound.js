@@ -13,6 +13,7 @@
     promote: 'promote.mp3',
     check:   'move-check.mp3',
     notify:  'notify.mp3',
+    gameend: 'game-end.webm',
     hover:   'button-hover.mp3',
   };
 

@@ -86,6 +86,13 @@
       // Dismiss the end-game banner (X) so the final board is visible.
       document.getElementById('btn-result-close').addEventListener('click', () => this.banner.classList.add('hidden'));
 
+      // Unlock audio on the FIRST user interaction anywhere — synchronously, so it
+      // still counts as a user gesture (calling unlock() after an `await`, e.g. the
+      // net fetch on "Start game", is too late and the browser blocks playback).
+      const unlockAudio = () => { if (global.Sound) Sound.unlock(); };
+      window.addEventListener('pointerdown', unlockAudio, { once: true });
+      window.addEventListener('keydown', unlockAudio, { once: true });
+
       // ---- audio toggles (music + sfx) — present on BOTH the home and game screens ----
       const musicBtns = document.querySelectorAll('.js-music');
       const sfxBtns   = document.querySelectorAll('.js-sfx');

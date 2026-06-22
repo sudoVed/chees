@@ -290,7 +290,7 @@
       const status = Engine.status();
       const side = Engine.sideToMove();
       const over = (status === 'checkmate' || status === 'stalemate' || status.startsWith('draw'));
-      if (over && !this.gameOver && global.Sound) Sound.play('notify');   // play once, on game end
+      if (over && !this.gameOver && global.Sound) Sound.play('gameend');   // play once, on game end
       this.gameOver = over;
       if (this.onStateChange) this.onStateChange({
         status, side, gameOver: this.gameOver, aiMoveSan: this.aiMoveSan, aiTag: this.aiTag,
