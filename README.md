@@ -46,6 +46,10 @@ much chess-engine code) before. If a term shows up, it gets explained.
 - **Fast.** All the heavy work is WASM (near-native speed), it uses CPU vector
   instructions (SIMD), and the search runs on a background thread so the board
   never freezes.
+- **Polished to play.** Piece-slide animation, move/capture/check/castle/promote
+  sound effects, optional background music, captured-piece ("trophy") trays, a
+  board-view toggle for two players sharing a phone, and a deliberate short pause
+  before the AI moves so it doesn't snap.
 - **Static.** The whole thing is just files. It hosts on GitHub Pages or
   Cloudflare Pages with no server.
 
@@ -145,12 +149,51 @@ All the models are defined in **one place** — the `MODELS` object at the top o
 | `desc`   | one-line hint shown under the dropdown                            |
 
 The dropdown is generated from this object, so to add/remove/rename opponents you
-just edit the object — nothing else. (See [§13](#13-tweaking-things).)
+just edit the object — nothing else. (See [§13](#13-tweaking-things).) The shipped
+set is **eight** opponents — NNUE and HCE each at depths 3, 5, 10, and a depth-20
+preset that is really "think about 5 seconds" (the time budget stops the search
+long before depth 20). They have playful names (`Neurally Oblivious`,
+`Classically Heroic`, …); the real spec shows under the dropdown.
 
-**The move log.** After each AI move a single line appears, e.g.
-`via NNUE D10 · 412 ms` — the eval that *actually* ran, the depth it reached, and
-how long it took. While in the opening book it instead shows `Book move`.
+### The move readout (top bar)
 
+- **Human vs Human:** the side-to-move indicator (a dot + "White to move").
+- **Vs AI:** after the AI replies, the bar shows its move in proper algebraic
+  notation in gold (`Qh4`, `O-O`, `exd5`, `e8=Q+`, `Qh7#` — with full
+  disambiguation), followed by a smaller grey tag, `via NNUE D10 · 300 ms`, that
+  reports the eval that **actually** ran, the depth reached, and the time taken
+  (or `Book move` while in book).
+
+### Captured pieces (trophy trays)
+
+Two trays flank the board showing each side's **captures** (the opponent pieces it
+has taken), chess.com-style, ordered Q, R, B, N, P. On wide screens they sit
+vertically left and right of the board; when width is tight they stack above and
+below. Captures are tracked from the move stream (not a board diff), so
+**promotions are handled correctly**: a pawn that promotes is never shown as a
+captured pawn, and a captured promoted queen correctly shows as a dead queen.
+Undo rolls the trays back in step.
+
+### Board view (Human vs Human)
+
+By default the whole board flips each turn to face the side to move. A toggle in
+the top bar (a board-rotation / crossed-out icon) switches to **table mode**: the
+board stays fixed and instead **all the pieces rotate 180° on Black's turn**, so
+two people sitting at opposite ends of a phone each read the board from their
+side. (The choice is remembered.)
+
+### Sound & music
+
+Two icon toggles — a speaker (sound effects) and a music note (background music) —
+appear on both the home screen and in-game, and the preference is remembered.
+Effects map to the move type (move / capture / castle / promotion / check), plus a
+game-end chime and button hovers. Undo plays the move sound too.
+
+### Other touches
+
+The AI waits at least half a second before playing (instant moves look jarring),
+Exit fully stops the game and returns home, and the game-over banner has an **×**
+so you can dismiss it and study the final position.
 
 ---
 
@@ -188,6 +231,10 @@ On top of that, the engine uses every standard speed/strength trick (all in
   so search them shallower; only re-search at full depth if one surprises us.
 - **Aspiration windows** — start each new depth expecting a score near the last
   one, with a narrow search window; widen only if reality falls outside it.
+- **Contempt (avoid draws)** — a draw is scored as slightly bad (~0.3 of a pawn)
+  for the side to move, so the AI keeps fighting in roughly equal positions
+  instead of taking lazy repetition / 50-move draws. It still accepts a draw when
+  the alternative is clearly worse.
 
 The search talks to the evaluator through a small interface (`Evaluator`), so the
 *same* search code runs with either the HCE or the NNUE. Swapping brains changes
@@ -457,12 +504,14 @@ frontend/      the static site (this is what you deploy)
     aiworker.js        main-thread client for that worker
     book.js            Polyglot opening-book probe
     polyglot-keys.js   the 781 standard Polyglot constants
-    board-ui.js        draws the board + pieces
-    interaction.js     clicks, legal-move limiter, move flow, book-then-search
-    controls.js        screens + the MODELS config (edit opponents here)
-    main.js            boot + wiring
+    board-ui.js        draws the board + pieces (+ slide animation, piece flip)
+    sound.js           sound effects + background music (+ toggles)
+    interaction.js     clicks, limiter, move flow, book-then-search, capture trays
+    controls.js        screens, the MODELS config, audio/rotation toggles
+    main.js            boot + the top-bar move readout
   models/      net.nnue + manifest.json
   book/        Book.bin (served to the browser)
+  assets/      sound effects + background music (.mp3)
 
 training/      PyTorch trainer (load, preprocess, model, train, export) + Colab notebook
 tools/         tournament + checknet (native C++ harnesses) + build scripts
@@ -479,10 +528,15 @@ build.sh       one-command WASM build
   `AI7: { label: 'NNUE — depth 15', eval: 'nnue', depth: 15, timeMs: 8000, desc: '...' }`
   and it appears in the dropdown automatically. At high depths give a generous
   `timeMs`, or the time budget will cut the search off before it reaches the depth
-  (you'll see a lower `D__` in the log — that's expected, not a bug).
+  (you'll see a lower `D__` in the move readout — that's expected, not a bug).
 - **Colours / theme:** the palette is the CSS variables at the top of
   `frontend/css/styles.css` (`--gold`, `--ink`, `--light-sq`, `--dark-sq`, …). The
   piece colours are two lines in `frontend/js/board-ui.js`.
+- **Sounds / music:** drop-in replace the `.mp3` files in `frontend/assets/` (same
+  names). The filename→event mapping is the `FILES` table in
+  `frontend/js/sound.js`; background-music volume is set there too.
+- **Draw-avoidance strength:** the `CONTEMPT` constant in
+  `engine/search/search.cpp` (rebuild the WASM after changing it).
 - **Swap in a stronger net:** export a new `frontend/models/net.nnue` (see
   [§9](#9-training-the-neural-net)) and commit it.
 

@@ -22,8 +22,11 @@
     boardEl: null,
     cells: new Array(64),
     orientation: 0,
+    pieceFlip: false,     // table mode: rotate black pieces 180 (board stays fixed)
     _built: false,
     onClick: null,
+
+    setPieceFlip(on) { this.pieceFlip = !!on; },
 
     init(boardEl, onClick) {
       this.boardEl = boardEl;
@@ -88,7 +91,35 @@
           layer.dataset.code = want;
           layer.innerHTML = code ? pieceSVG(code) : '';
         }
+        layer.classList.toggle('flip180', this.pieceFlip && code !== 0);   // table mode: rotate all pieces 180
       }
+    },
+
+    // Slide the piece currently on `fromSq` to `toSq`, then call cb(). Uses the
+    // live cell rectangles so it's correct regardless of board orientation/size.
+    // The caller re-renders the board in cb (which snaps to the final state).
+    animateMove(fromSq, toSq, cb) {
+      const fromCell = this.cells[fromSq], toCell = this.cells[toSq];
+      if (!fromCell || !toCell) { cb && cb(); return; }
+      const layer = fromCell.querySelector('.piece');
+      const svg = layer && layer.firstElementChild;
+      if (!svg) { cb && cb(); return; }
+      const a = fromCell.getBoundingClientRect(), b = toCell.getBoundingClientRect();
+      const dx = Math.round(b.left - a.left), dy = Math.round(b.top - a.top);
+      if (dx === 0 && dy === 0) { cb && cb(); return; }
+      let done = false;
+      const finish = () => {
+        if (done) return; done = true;
+        svg.removeEventListener('transitionend', finish);
+        layer.style.zIndex = ''; svg.style.transition = ''; svg.style.transform = '';
+        cb && cb();
+      };
+      const rot = layer.classList.contains('flip180') ? ' rotate(180deg)' : '';   // keep table-mode rotation
+      layer.style.zIndex = '5';
+      svg.style.transition = 'transform 0.2s ease-out';
+      svg.addEventListener('transitionend', finish);
+      requestAnimationFrame(() => { svg.style.transform = 'translate(' + dx + 'px,' + dy + 'px)' + rot; });
+      setTimeout(finish, 320);   // safety net if transitionend doesn't fire
     },
 
     clearHighlights() {

@@ -12,6 +12,10 @@ namespace Search {
 static const int INF        = 32000;
 static const int MATE       = 30000;
 static const int MATE_IN_MAX = MATE - (int)MAX_PLY;
+// Contempt: treat a draw as slightly bad for the side to move, so the engine
+// fights on (avoids repetition / 50-move draws) when the position is roughly
+// equal. It will still take a draw when the alternative is clearly worse.
+static const int CONTEMPT   = 35;
 
 static const int VAL[6] = {100, 320, 330, 500, 900, 20000};
 
@@ -118,7 +122,7 @@ static int negamax(Position& pos, int depth, int alpha, int beta, int ply) {
     if (budget_hit()) return 0;
     g_nodes++;
 
-    if (ply > 0 && (pos.is_repetition() || pos.halfmoveClock >= 100)) return 0;
+    if (ply > 0 && (pos.is_repetition() || pos.halfmoveClock >= 100)) return -CONTEMPT;
     if (depth <= 0) return qsearch(pos, alpha, beta, ply);
 
     Move ttMove = 0;

@@ -11,6 +11,10 @@
 
   <!-- Start screen: blank, centered menu -->
   <section id="start-screen" class="screen center hidden">
+    <div class="home-audio">
+      <button class="icon-btn js-music" title="Background music" aria-label="Toggle background music"></button>
+      <button class="icon-btn js-sfx" title="Sound effects" aria-label="Toggle sound effects"></button>
+    </div>
         <div class="start-card">
       <h1 class="logo">Chess</h1>
       <div id="mode-buttons">
@@ -41,21 +45,31 @@
       <div class="turn">
         <span id="turn-dot" class="turn-dot white"></span>
         <span id="status-text">White to move</span>
+        <span id="move-tag" class="move-tag"></span>
       </div>
       <div class="bar-actions">
-        <button id="btn-undo" class="bar-btn" title="Undo">Undo</button>
-        <button id="btn-exit" class="bar-btn" title="Exit">Exit</button>
+        <button id="btn-rotate" class="icon-btn hidden" title="Board rotation" aria-label="Toggle board rotation"></button>
+        <button id="btn-music" class="icon-btn js-music" title="Background music" aria-label="Toggle background music"></button>
+        <button id="btn-sfx" class="icon-btn js-sfx" title="Sound effects" aria-label="Toggle sound effects"></button>
+        <button id="btn-undo" class="icon-btn" title="Undo">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/></svg>
+        </button>
+        <button id="btn-exit" class="icon-btn" title="Exit">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/><path d="M9 21H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3"/></svg>
+        </button>
       </div>
     </header>
-    <div id="ai-log" class="ai-log"></div>
 
     <main class="board-area">
-      <div class="board-wrap">
-        <div id="board" class="board"></div>
+      <div class="play-area">
+        <div class="tray" id="tray-a"></div>
+        <div class="board-wrap"><div id="board" class="board"></div></div>
+        <div class="tray" id="tray-b"></div>
       </div>
     </main>
 
     <div id="result-banner" class="result-banner hidden">
+      <button id="btn-result-close" class="banner-close" aria-label="Close" title="Close">&times;</button>
       <span id="result-text"></span>
       <button id="btn-result-new" class="menu-btn small">New game</button>
     </div>
@@ -66,6 +80,7 @@
   <script src="js/polyglot-keys.js"></script>
   <script src="js/book.js"></script>
   <script src="js/board-ui.js"></script>
+  <script src="js/sound.js"></script>
   <script src="js/aiworker.js"></script>
   <script src="js/interaction.js"></script>
   <script src="js/controls.js"></script>
