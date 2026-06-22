@@ -269,6 +269,8 @@
       BoardUI.setPieceFlip(pieceFlip);
       BoardUI.setOrientation(orientation);
       BoardUI.render(Engine.board());
+      const pa = document.querySelector('.play-area');   // table mode: rotate tray icons with the board
+      if (pa) pa.classList.toggle('flip-pieces', pieceFlip);
       this._renderTrays(orientation);
       this._draw();
       this._reportStatus();

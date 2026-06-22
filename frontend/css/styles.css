@@ -72,11 +72,13 @@ body {
 .start-card::after  { bottom: 8px; right: 8px; border-left: 0; border-top: 0; }
 
 .logo {
-  text-align: center; margin: 4px 0 20px; padding-bottom: 16px;
+  display: flex; align-items: center; justify-content: center; gap: 14px;
+  margin: 4px 0 20px; padding-bottom: 16px;
   font-family: var(--serif); font-size: 40px; font-weight: 600;
-  letter-spacing: 8px; text-indent: 8px; color: var(--cream);
+  letter-spacing: 8px; color: var(--cream);
   position: relative;
 }
+.logo-icon { flex: 0 0 auto; width: 46px; height: 46px; border-radius: 9px; }
 .logo::after {
   content: ""; position: absolute; left: 50%; bottom: 0; transform: translateX(-50%);
   width: 54px; height: 1px;
@@ -174,6 +176,7 @@ body {
 .tray .dead { flex: 0 0 auto; width: 30px; height: 30px; line-height: 0; }
 .play-area.stack .tray .dead { width: 26px; height: 26px; }
 .tray .dead .piece-svg { width: 100%; height: 100%; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.35)); }
+.play-area.flip-pieces .tray .dead .piece-svg { transform: rotate(180deg); }   /* match board rotation in table mode */
 
 /* ---------- board ---------- */
 .board {
@@ -316,6 +319,7 @@ body {
 /* ---------- mobile / small screens ---------- */
 @media (max-width: 520px) {
   .logo { font-size: 34px; letter-spacing: 6px; }
+  .logo-icon { width: 38px; height: 38px; }
   /* board spans the full phone width (minus the board-area padding) */
   :root { --board: min(calc(100vw - 16px), calc(100vh - 88px), 760px); }
 }
