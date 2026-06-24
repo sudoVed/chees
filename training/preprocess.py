@@ -18,6 +18,20 @@ Packed record (126 bytes, all fields naturally aligned):
     uint16  opp_feats[30]
 A sidecar `<out>.meta` stores N, MAXF, REC_SIZE for the loader.
 
+python preprocess.py --src train-00000.parquet train-00001.parquet train-00002.parquet train-00003.parquet train-00004.parquet train-00005.parquet train-00006.parquet train-00007.parquet train-00008.parquet train-00009.parquet --out train.bin --workers 8
+
+python preprocess.py --src E:\chessdata\train-00000.parquet `
+E:\chessdata\train-00001.parquet `
+E:\chessdata\train-00002.parquet `
+E:\chessdata\train-00003.parquet `
+E:\chessdata\train-00004.parquet `
+E:\chessdata\train-00005.parquet `
+E:\chessdata\train-00006.parquet `
+E:\chessdata\train-00007.parquet `
+E:\chessdata\train-00008.parquet `
+E:\chessdata\train-00009.parquet `
+--out train.bin --workers 8
+
 Eval convention: the source `cp` is assumed to be from WHITE's point of view
 (Lichess convention). Use --cp-pov stm if your source is side-to-move relative.
 Sanity check after preprocessing: the start position should map near target 0.5.
@@ -52,7 +66,8 @@ def make_record(args):
     fo = features(pieces, stm ^ 1)
     if len(fs) > MAXF or len(fo) > MAXF:
         return None
-    target = cp_to_target(cp_white, stm)
+    target = cp_white if stm == 0 else -cp_white
+    target = max(-2000, min(2000, target))
     s = np.zeros(MAXF, np.uint16); s[:len(fs)] = fs
     o = np.zeros(MAXF, np.uint16); o[:len(fo)] = fo
     return (struct.pack('<f', target) + struct.pack('<BB', len(fs), len(fo))

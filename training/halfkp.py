@@ -5,8 +5,8 @@ These functions are byte-for-byte consistent with the C++ engine
 the exporter both import from here so indexing can never drift from the engine.
 """
 NUM_FEATURES = 64 * 10 * 64   # 40960
-ACC, L1, L2 = 256, 32, 32
-EVAL_SCALE = 400.0            # centipawns per logit unit (sigmoid scaling)
+ACC, L1, L2 = 256, 256, 64
+EVAL_SCALE = 400.0            # UI win-probability scale; training targets are cp
 
 PIECE = {'P': (0, 0), 'N': (0, 1), 'B': (0, 2), 'R': (0, 3), 'Q': (0, 4), 'K': (0, 5),
          'p': (1, 0), 'n': (1, 1), 'b': (1, 2), 'r': (1, 3), 'q': (1, 4), 'k': (1, 5)}

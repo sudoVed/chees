@@ -3,13 +3,13 @@ inference in engine/nn/nnue.cpp exactly:
 
     accumulator[persp] = EmbeddingBag(sum) over active features + b1   (ACC=256)
     x   = concat( crelu(acc[stm]), crelu(acc[opp]) )                   (512)
-    h1  = crelu( Linear(512->32)(x) )
-    h2  = crelu( Linear(32->32)(h1) )
-    out = Linear(32->1)(h2)                       # centipawns, mover-relative
+    h1  = crelu( Linear(512->256)(x) )
+    h2  = crelu( Linear(256->64)(h1) )
+    out = Linear(64->1)(h2)                       # centipawns, mover-relative
 
-Training target is a win probability; we map the output with
-    p = sigmoid(out / EVAL_SCALE)
-and regress against the (blended) game result / teacher eval.
+Training targets are centipawns, and the raw network output is regressed
+directly with MSELoss(out, target_cp). Convert to win probability only outside
+training, for UI display or reporting.
 
 The feature transformer is an EmbeddingBag in sum mode — that IS the NNUE
 accumulator, and its weight matrix [NUM_FEATURES, ACC] exports directly into the
@@ -17,7 +17,7 @@ engine's W1 (row per feature).
 """
 import torch
 import torch.nn as nn
-from halfkp import NUM_FEATURES, ACC, L1, L2, EVAL_SCALE
+from halfkp import NUM_FEATURES, ACC, L1, L2
 
 
 def crelu(x):
@@ -33,6 +33,8 @@ class NNUE(nn.Module):
         self.l2 = nn.Linear(L1, L2)
         self.l3 = nn.Linear(L2, 1)
         nn.init.normal_(self.transformer.weight, std=0.01)
+        nn.init.zeros_(self.l3.weight)
+        nn.init.zeros_(self.l3.bias)
 
     def accumulator(self, idx, offsets):
         # idx: 1D LongTensor of feature ids; offsets: per-sample start indices
@@ -45,6 +47,3 @@ class NNUE(nn.Module):
         h1 = crelu(self.l1(x))
         h2 = crelu(self.l2(h1))
         return self.l3(h2).squeeze(1)          # raw centipawn output
-
-    def win_prob(self, out):
-        return torch.sigmoid(out / EVAL_SCALE)

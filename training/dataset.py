@@ -46,6 +46,10 @@ class PackedDataset(_Base):
         opp = feats[self.maxf:self.maxf + ocnt].astype(np.int64)
         return stm, opp, np.float32(target)
 
+    def target(self, i):
+        self._ensure()
+        return np.float32(self.buf[i, 0:4].view(np.float32)[0])
+
     # don't pickle the memmap handle to workers
     def __getstate__(self):
         d = self.__dict__.copy()

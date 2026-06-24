@@ -11,7 +11,7 @@ import sys, struct
 import numpy as np
 
 NUM_FEATURES = 64 * 10 * 64   # 40960
-ACC, L1, L2 = 256, 32, 32
+ACC, L1, L2 = 256, 256, 64
 
 FENS = [
     "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",            # startpos

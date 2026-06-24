@@ -3,13 +3,13 @@
 Offline trainer for the engine's neural evaluation. Architecture + feature
 indexing here are byte-for-byte identical to the C++ inference in
 `engine/nn/nnue.cpp` (verified by `scripts/nnue_test.cpp` vs `ref_gen.py`, and
-the data pipeline verified by the start position mapping to target 0.5).
+the data pipeline verified by the start position mapping near 0cp).
 
 ## Architecture (locked)
 
 HalfKP features (40960 / perspective) -> accumulator 256 / side ->
-concat(stm, opp) = 512 -> 32 -> 32 -> 1, clipped-ReLU. Output is side-to-move
-centipawns; trained as `sigmoid(out/400)` against the teacher eval.
+concat(stm, opp) = 512 -> 256 -> 64 -> 1, clipped-ReLU. Output is
+side-to-move centipawns; trained directly with `MSELoss(out, target_cp)`.
 
 ## Data: HF lichess-stockfish-normalized (10% slice ~= 32M)
 
@@ -25,7 +25,7 @@ huggingface-cli download mateuszgrzyb/lichess-stockfish-normalized \
 
 # 2. one-time preprocess -> packed binary (memmapped at train time; multi-core)
 python3 preprocess.py --src data/<part>.parquet --out train.bin --workers 8
-#    sanity: the start position must map to target ~0.5 (orientation check)
+#    sanity: the start position should map near 0cp (orientation check)
 
 # 3. train (GPU strongly recommended)
 python3 train.py --data train.bin --epochs 8 --batch 16384 --out net.pt
@@ -39,14 +39,14 @@ python3 export_weights.py --model net.pt --out ../dist/net.nnue
 ### Eval convention
 Source `cp` is treated as WHITE point-of-view (Lichess). `mate` -> +/-2000cp,
 `cp` clamped to +/-2000. If a source is side-to-move relative, pass
-`--cp-pov stm` to preprocess. The start-position target (~0.5) is the check.
+`--cp-pov stm` to preprocess. The start-position target near 0cp is the check.
 
 ## Files
 - `halfkp.py` - shared feature indexing (single source of truth).
 - `model.py` - PyTorch network (EmbeddingBag = the accumulator).
 - `preprocess.py` - source (csv/parquet) -> packed binary (+ `.meta`).
 - `dataset.py` - memmapped `PackedDataset` + EmbeddingBag collate.
-- `train.py` - training loop (win-prob MSE).
+- `train.py` - training loop (centipawn MSE + validation split).
 - `export_weights.py` - writes the engine `NNU1` weights.
 - `ref_gen.py` + `../scripts/nnue_test.cpp` - numerical parity harness.
 

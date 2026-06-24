@@ -239,6 +239,7 @@ EXPORT void set_search_eval(int useNnue) {
 }
 
 EXPORT int load_nnue(int len) {
+    g_nnueLoaded = 0;
     if (len <= 0 || len > NNUE_BLOB_MAX) return 0;
     bool ok;
     if (g_nnueBlob[3] == '2' || g_nnueBlob[3] == '3') {   // NNU2/NNU3 = pre-quantized

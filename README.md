@@ -278,8 +278,8 @@ of the net (in [`engine/nn/nnue.cpp`](engine/nn/nnue.cpp), trained by the code i
 `training/`):
 
 ```
-   40960 inputs  ─►  256 (per side, ×2 = 512)  ─►  32  ─►  32  ─►  1 score
-   (HalfKP features)   "accumulator"            two hidden layers   centipawns
+   40960 inputs  ─►  256 (per side, ×2 = 512)  ─►  256  ─►  64  ─►  1 score
+   (HalfKP features)   "accumulator"             two hidden layers   centipawns
 ```
 
 **The inputs (HalfKP).** This is the clever input encoding NNUE nets use. For
@@ -292,10 +292,50 @@ the efficiency trick has a special case for king moves (see below).
 
 **The layers.** The first layer (the "feature transformer") turns those ~30 active
 inputs into a 256-number summary called the **accumulator**, one per side. The two
-accumulators (512 numbers) feed two small 32-wide hidden layers, then a final
+accumulators (512 numbers) feed 256-wide and 64-wide hidden layers, then a final
 layer outputs one number: the score in centipawns (hundredths of a pawn). The
 activation between layers is a **clipped ReLU** (values squashed into a fixed
 range), which matters for the integer math in [§7](#7-the-efficiency-tricks-explained-this-is-the-good-part).
+
+This shape is intentionally modest. Earlier versions used smaller dense layers
+and trained through a sigmoid win-probability target, which compressed the
+difference between "a little better" and "winning by a queen." The current model
+regresses directly to centipawns and uses `512 -> 256 -> 64 -> 1`: more capacity
+where the dense net decides positional patterns, while keeping the expensive
+HalfKP accumulator at 256 and keeping the exported NNU2 file small enough for a
+browser game.
+
+### Current NNUE quality snapshot
+
+The shipped `net.nnue` is not pretending to be Stockfish, but it now has real
+material scale and is competitive with the hand-crafted evaluator at nearby
+search depths.
+
+`tools/checknet` on `dist/net.nnue`:
+
+| position | NNUE eval |
+|----------|-----------|
+| start position | `+0.18` pawns |
+| White up a queen | `+8.44` pawns |
+| White down a queen | `-6.39` pawns |
+| White up a rook | `+5.00` pawns |
+| White up a pawn | `+0.56` pawns |
+
+The quick verdict from that harness: a queen is worth about **8.26 pawns** to
+this net, so it has real material sense instead of the old compressed
+probability-output behaviour.
+
+Tournament snapshots against HCE, same opening randomization seed:
+
+| match | result | NNUE score |
+|-------|--------|------------|
+| `nnue:5` vs `hce:5`, 20 games | NNUE 7 wins, HCE 10 wins, 3 draws | **42.5%** |
+| `nnue:6` vs `hce:5`, 20 games | NNUE 8 wins, HCE 6 wins, 6 draws | **55.0%** |
+
+The important read: the NNUE is usable and materially sane, HCE is still a strong
+baseline at equal depth, and giving the NNUE a modest extra ply makes it edge the
+HCE in this short match. Larger tournaments are still the right way to make final
+strength claims.
 
 Both evaluators implement the same `Evaluator` interface, so either one drops into
 the search unchanged.

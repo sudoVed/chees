@@ -10,6 +10,18 @@ here is already ~31.6M positions = the 10% slice, so we just grab one file.
     python load.py --shard train-00003.parquet  # a different shard
     python load.py --out-dir D:/chessdata       # choose where it lands
 
+    python load.py --shard train-00000.parquet `
+    --shard train-00001.parquet  `
+    --shard train-00002.parquet  `
+    --shard train-00003.parquet  `
+    --shard train-00004.parquet  `
+    --shard train-00005.parquet  `
+    --shard train-00006.parquet  `
+    --shard train-00007.parquet  `
+    --shard train-00008.parquet  `
+    --shard train-00009.parquet  `
+    --out-dir E:/chessdata
+
 Everything (download + any HF cache) stays under --out-dir, so nothing touches
 C:. Next step is printed at the end.
 """
@@ -17,6 +29,7 @@ import argparse, os
 
 REPO = "mateuszgrzyb/lichess-stockfish-normalized"
 
+shards = [f"train-{i:05d}.parquet" for i in range(10)]
 
 def main():
     ap = argparse.ArgumentParser()
@@ -33,10 +46,11 @@ def main():
     os.environ['HF_HOME'] = os.path.join(out, '.hfcache')
 
     from huggingface_hub import hf_hub_download
-    print(f"downloading {args.shard} from {REPO}\n  -> {out}")
-    path = hf_hub_download(repo_id=REPO, filename=args.shard,
-                           repo_type='dataset', local_dir=out)
-    print(f"saved {path}  ({os.path.getsize(path)/1e6:.0f} MB)")
+    for shard in shards:
+        print(f"downloading {shard} from {REPO}\n  -> {out}")
+        path = hf_hub_download(repo_id=REPO, filename=shard,
+                               repo_type='dataset', local_dir=out)
+        print(f"saved {path}  ({os.path.getsize(path)/1e6:.0f} MB)")
     print("\nnext:\n  python preprocess.py --src", path, "--out train.bin --workers 8")
 
 

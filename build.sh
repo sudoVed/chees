@@ -29,6 +29,7 @@ EXPORTS=(
   in_check perft_current
   search_best_move search_score search_nodes search_depth
   get_nnue_buf nnue_blob_capacity load_nnue nnue_active
+  eval_nnue_white
   set_search_eval
 )
 EXPORT_FLAGS=""

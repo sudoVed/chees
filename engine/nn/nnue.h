@@ -9,8 +9,8 @@ namespace NN {
 
 constexpr int NUM_FEATURES = 64 * 10 * 64;  // 40960
 constexpr int ACC          = 256;
-constexpr int L1           = 32;
-constexpr int L2           = 32;
+constexpr int L1           = 256;
+constexpr int L2           = 64;
 constexpr int EVAL_SCALE   = 400;
 constexpr int MAX_ACTIVE   = 30;
 
