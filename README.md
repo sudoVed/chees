@@ -608,4 +608,3 @@ build.sh       one-command WASM build
 The deliberate deviations from the original plan: built with **Zig** instead of
 Emscripten, **inline-SVG** pieces instead of an image set, and **static hosting**
 instead of any backend.
-```
