@@ -27,7 +27,7 @@
       if (global.CHESS_WASM_BASE64) {
         bytes = b64ToBytes(global.CHESS_WASM_BASE64);   // embedded (file:// safe)
       } else {
-        const resp = await fetch('../dist/engine.wasm');
+        const resp = await fetch('../dist/engine.wasm?v=2');
         bytes = new Uint8Array(await resp.arrayBuffer());
       }
       const { instance } = await WebAssembly.instantiate(bytes, {});
@@ -111,6 +111,12 @@
 
     // ---- NNUE: load a net.nnue blob; the AI then evaluates with it ----
     loadNNUE(bytes) {
+      console.log(
+        "NNUE required:",
+        bytes.length,
+        "capacity:",
+        this._e.nnue_blob_capacity()
+      );
       if (bytes.length > this._e.nnue_blob_capacity()) return false;
       this._u8().set(bytes, this._e.get_nnue_buf());
       return this._e.load_nnue(bytes.length) === 1;
@@ -167,7 +173,16 @@
     async loadNetFromServer(name) {
       const r = await this.fetchNet(name);
       if (!r.ok) return r;
-      return { ok: this.loadNNUE(r.bytes), name: r.name, size: r.size };
+
+      console.log("NNUE file:", r.name);
+      console.log("NNUE size:", r.bytes.length);
+
+      const ok = this.loadNNUE(r.bytes);
+
+      console.log("loadNNUE:", ok);
+      console.log("nnueActive:", this.nnueActive());
+
+      return { ok, name: r.name, size: r.size };
     },
 
     // perft passthrough (handy for debugging in the console)
